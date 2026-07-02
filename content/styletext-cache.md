@@ -14,12 +14,13 @@ often.
 A couple of weeks later I opened another pull request that undid part of the
 same optimization.
 
-Undoing part of an optimization that just posted a 1135% speedup sounds like a
-contradiction. It isn't. The number was right, and it still managed to mislead
-me. It wasn't a bug or a measurement fluke: the optimized code really did get
-1135% faster. It just described one narrow situation, and I hadn't yet worked
-out how narrow. Once I did, I could see which part of the optimization was worth
-keeping and which part wasn't helping. Here's the whole thing, from the start.
+Undoing part of an optimization that just posted a 1135% speedup sounds
+strange, but the number was right, and it still managed to mislead me. It
+wasn't a bug or a measurement fluke: the optimized code really did get 1135%
+faster. But it only described one narrow situation, and I hadn't yet
+discovered how narrow. Once I did, I could see which part of the optimization
+was worth keeping and which part wasn't helping. Here's the whole thing, from
+the start.
 
 ## What `styleText` even is
 
@@ -49,9 +50,9 @@ console.log(styleText("#ff0000", "hello"));
 ```
 
 Hex colors use a 24-bit truecolor sequence with the raw RGB channels:
-`\x1b[38;2;255;0;0m`. To support hex, `styleText` does a small pipeline on every
-call: parse `#ff0000` into `(255, 0, 0)`, format those three numbers into
-`38;2;r;g;b`, and glue the strings together.
+`\x1b[38;2;255;0;0m`. To support hex, `styleText` does a small pipeline on
+every call: parse `#ff0000` into `(255, 0, 0)`, then format and concatenate
+those numbers into `38;2;r;g;b`.
 
 That pipeline is where this whole story starts.
 
@@ -141,9 +142,8 @@ validateStream=1 format='#ff0000' messageType='string'         -0.27 %
 ```
 
 Same job from the caller's point of view: colorize a string with a hex color.
-One is more than twelve times faster. The other didn't move at all. The reason is
-not that one benchmark was wrong. It's that they were measuring two very different
-code paths.
+One is more than twelve times faster. The other didn't move at all. Neither
+benchmark was wrong; they were measuring two very different code paths.
 
 With `validateStream=0`, a single format, and string text, `styleText` can take a
 fast path. There is very little surrounding work, so building the hex escape
@@ -161,10 +161,9 @@ into the noise.
 It's coupon-clipping next to a mortgage payment. Technically you
 saved money. Nobody can tell.
 
-The benchmark was answering too broad a question. "Does caching help styleText
-with hex colors?" mixes two code paths that behave nothing alike. The better
-question was "on which code path does this cache pay for itself?" Once you ask it
-that way, the answer is right there in the quiet rows.
+"Does caching help styleText with hex colors?" was too broad a question, mixing
+two code paths that behave nothing alike. Asking on which code path the cache
+pays for itself gets you an answer that's right there in the quiet rows.
 
 ## Deleting it
 
@@ -176,13 +175,12 @@ branch.
 Then I benchmarked it, to confirm removing the cache hadn't cost anything. The
 results were exactly as unremarkable as the question predicted: a scatter of
 1-3% deltas with wide error bars, statistically indistinguishable from having
-changed nothing. Validation dominates the cost on that path, so the lookup
+changed nothing. Validations dominates the cost on that path, so the lookup
 savings were negligible all along.
 
 What survived: the fast-path cache stayed. That's the one place the measurement
-justified it, so that's the one place it lives. The point was never "caches are
-bad." The point was that a cache belongs where the thing it caches is the thing
-that's expensive.
+justified it, so that's the one place it lives. A cache belongs where the thing
+it caches is the thing that's expensive, and on the slow path it wasn't.
 
 ## What this is actually about
 
