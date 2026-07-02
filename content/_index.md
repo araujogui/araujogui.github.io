@@ -1,17 +1,9 @@
 ---
-title: My Site
+title: Guilherme Araújo
+type: blog
 toc: false
 ---
 
-This is the landing page.
+Hi, I'm Guilherme, a software engineer. I love open source and I'm a Node.js Web Team member.
 
-## Explore
-
-{{< cards >}}
-  {{< card link="docs" title="Docs" icon="book-open" >}}
-  {{< card link="about" title="About" icon="user" >}}
-{{< /cards >}}
-
-## Documentation
-
-For more information, visit [Hextra](https://imfing.github.io/hextra).
+I write here about things I'm working on and learning.
