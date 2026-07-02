@@ -156,7 +156,9 @@ Change any of those conditions and the picture changes. Non-string messages
 don't hit that shortcut. `validateStream=1`, which is the default, does the
 normal stream and option handling first. In that path, building the escape
 sequence is just one small step among larger fixed costs, so saving it disappears
-into the noise. It's coupon-clipping next to a mortgage payment. Technically you
+into the noise.
+
+It's coupon-clipping next to a mortgage payment. Technically you
 saved money. Nobody can tell.
 
 The benchmark was answering too broad a question. "Does caching help styleText
