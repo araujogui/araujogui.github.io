@@ -4,7 +4,7 @@ date: 2026-07-02
 description: "Why a real 1135% speedup was also a misleading one."
 ---
 
-Earlier this year, after adding hex color support to `styleText` in
+Earlier this year, after adding hex color support to Node.js `styleText` API in
 [#61556](https://github.com/nodejs/node/pull/61556), I added a small
 optimization to the same function. I ran the benchmark, and one line of the
 results said **1135% faster**: more than twelve times as fast. I remember
