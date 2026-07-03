@@ -193,11 +193,11 @@ not in conflict.
 
 So a few things I check now, whatever I'm optimizing:
 
-- Be suspicious of a giant relative win on something that was already cheap. A
-  huge percentage of almost nothing is still almost nothing.
-- Benchmark the path real callers take, not the fastest one I can construct.
 - When a benchmark averages over branches, split it. One number for a function
   with multiple code paths is one number too few.
+- Benchmark the path real callers take, not the fastest one I can construct.
+- Be suspicious of a giant relative win on something that was already cheap. A
+  huge percentage of almost nothing is still almost nothing.
 
 ## The trail
 
