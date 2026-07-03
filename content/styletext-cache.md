@@ -145,21 +145,20 @@ Same job from the caller's point of view: colorize a string with a hex color.
 One is more than twelve times faster. The other didn't move at all. Neither
 benchmark was wrong; they were measuring two very different code paths.
 
-With `validateStream=0`, a single format, and string text, `styleText` can take a
-fast path. There is very little surrounding work, so building the hex escape
-sequence is a large part of the total cost. Replace that work with a cache
-lookup, and the relative win looks enormous. You removed nearly all of a tiny
-thing, so the percentage goes to the moon. Twelve times "barely any work" is
-still barely any work, but the ratio is real.
+However, with `validateStream=0`, a single format (not an array), and a
+string message, `styleText` takes the fast path. On this fast path, there is
+very little surrounding work, so building the hex escape sequence is a large
+part of the total cost. Replace that work with a cache lookup, and the
+relative win looks enormous. You removed nearly all of a tiny thing, so the
+percentage goes to the moon.
 
-Change any of those conditions and the picture changes. Non-string messages
-don't hit that shortcut. `validateStream=1`, which is the default, does the
-normal stream and option handling first. In that path, building the escape
-sequence is just one small step among larger fixed costs, so saving it disappears
-into the noise.
+Twelve times "barely any work" is still barely any work, but the ratio is real.
 
-It's coupon-clipping next to a mortgage payment. Technically you
-saved money. Nobody can tell.
+Change any of those conditions and the picture changes. `validateStream=1`,
+for example (the default value for that option), takes the slow path. On
+this path, building the escape sequence is just one small step among larger
+fixed costs, so saving it disappears into the noise. It's coupon-clipping
+next to a mortgage payment. Technically you saved money. Nobody can tell.
 
 "Does caching help styleText with hex colors?" was too broad a question, mixing
 two code paths that behave nothing alike. Asking on which code path the cache
@@ -173,7 +172,7 @@ just recomputes each sequence from scratch: no `Map`, no "is the cache full"
 branch.
 
 Then I benchmarked it, to confirm removing the cache hadn't cost anything. The
-results were exactly as unremarkable as the question predicted: a scatter of
+results were exactly as unremarkable as that reasoning predicted: a scatter of
 1-3% deltas with wide error bars, statistically indistinguishable from having
 changed nothing. Validations dominates the cost on that path, so the lookup
 savings were negligible all along.
